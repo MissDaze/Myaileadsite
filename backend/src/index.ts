@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import cors from "cors";
+import rateLimit from "express-rate-limit";
 
 import authRouter from "./routes/auth";
 import scrapeJobsRouter from "./routes/scrape-jobs";
@@ -19,21 +20,45 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check
+// Rate limiting
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later" },
+});
+
+const apiLimiter = rateLimit({
+  windowMs: 60 * 1000, // 1 minute
+  max: 120,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "Too many requests, please try again later" },
+});
+
+const webhookLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Health check (no rate limit needed)
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 // Routes
-app.use("/api/auth", authRouter);
-app.use("/api/scrape-jobs", scrapeJobsRouter);
-app.use("/api/leads", leadsRouter);
-app.use("/api/sms", smsRouter);
-app.use("/api/webhook", webhookRouter);
-app.use("/api/build", buildRouter);
-app.use("/api/deploy", deployRouter);
-app.use("/api/deployments", deployRouter);
-app.use("/api/analytics", analyticsRouter);
+app.use("/api/auth", authLimiter, authRouter);
+app.use("/api/scrape-jobs", apiLimiter, scrapeJobsRouter);
+app.use("/api/leads", apiLimiter, leadsRouter);
+app.use("/api/sms", apiLimiter, smsRouter);
+app.use("/api/webhook", webhookLimiter, webhookRouter);
+app.use("/api/build", apiLimiter, buildRouter);
+app.use("/api/deploy", apiLimiter, deployRouter);
+app.use("/api/deployments", apiLimiter, deployRouter);
+app.use("/api/analytics", apiLimiter, analyticsRouter);
 
 // Global error handler
 app.use(
