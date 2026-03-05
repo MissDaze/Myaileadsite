@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model ScrapeJob {
+  id         String   @id @default(cuid())
+  query      String
+  location   String
+  status     String   @default("PENDING") // PENDING|RUNNING|DONE|FAILED
+  lead_count Int      @default(0)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  leads      Lead[]
+}
+
+model Lead {
+  id                  String    @id @default(cuid())
+  scrape_job_id       String
+  business_name       String
+  phone               String
+  address             String?
+  category            String?
+  rating              Float?
+  review_count        Int?
+  maps_url            String?
+  maps_overview_url   String?
+  maps_reviews_url    String?
+  maps_photos_url     String?
+  hours               String?
+  sms_sent            Boolean   @default(false)
+  reply_text          String?
+  intent              String    @default("NEUTRAL") // POSITIVE|NEGATIVE|NEUTRAL
+  build_status        String    @default("NOT_STARTED") // NOT_STARTED|QUEUED|BUILDING|COMPLETE|FAILED
+  build_log           String?
+  github_repo_url     String?
+  site_url            String?
+  followup_sms_sent   Boolean   @default(false)
+  pipeline_stage      String    @default("SCRAPED") // SCRAPED|SMS_SENT|REPLIED_POSITIVE|BUILDING|DEPLOYED|FOLLOWUP_SENT|INVOICED|CLOSED_WON|CLOSED_LOST
+  excluded            Boolean   @default(false)
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+  scrape_job          ScrapeJob @relation(fields: [scrape_job_id], references: [id])
+
+  @@unique([phone, scrape_job_id])
+}
