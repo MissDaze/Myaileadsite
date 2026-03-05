@@ -33,7 +33,7 @@ api.interceptors.response.use(
 
 // Auth
 export const login = (username: string, password: string) =>
-  api.post<{ token: string; user: string }>('/auth/login', { username, password })
+  api.post<{ token: string; user?: string; expiresIn?: string }>('/auth/login', { username, password })
 
 // Scrape Jobs
 export const getScrapeJobs = () => api.get<{ jobs: import('../types').ScrapeJob[] }>('/scrape-jobs')

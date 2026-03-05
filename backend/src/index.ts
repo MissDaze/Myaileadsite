@@ -11,6 +11,8 @@ import webhookRouter from "./routes/webhook";
 import buildRouter from "./routes/build";
 import deployRouter from "./routes/deploy";
 import analyticsRouter from "./routes/analytics";
+import outreachRouter from "./routes/outreach";
+import crmRouter from "./routes/crm";
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -59,6 +61,8 @@ app.use("/api/build", apiLimiter, buildRouter);
 app.use("/api/deploy", apiLimiter, deployRouter);
 app.use("/api/deployments", apiLimiter, deployRouter);
 app.use("/api/analytics", apiLimiter, analyticsRouter);
+app.use("/api/outreach", apiLimiter, outreachRouter);
+app.use("/api/crm", apiLimiter, crmRouter);
 
 // Global error handler
 app.use(

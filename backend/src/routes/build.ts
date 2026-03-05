@@ -2,42 +2,59 @@ import { Router, Request, Response } from "express";
 import { z } from "zod";
 import { PrismaClient } from "@prisma/client";
 import { requireAuth } from "../middleware/auth";
-import { buildQueue, enqueueBuildJob } from "../lib/queue";
+import { enqueueBuildJob } from "../lib/queue";
 
 const router = Router();
 const prisma = new PrismaClient();
 
-// GET /api/build/queue
+// GET /api/build/queue – returns leads with active or past build states
 router.get("/queue", requireAuth, async (_req: Request, res: Response): Promise<void> => {
-  const [waiting, active, completed, failed] = await Promise.all([
-    buildQueue.getJobs(["waiting"]),
-    buildQueue.getJobs(["active"]),
-    buildQueue.getJobs(["completed"], 0, 49),
-    buildQueue.getJobs(["failed"], 0, 49),
-  ]);
-
-  const formatJob = (job: { id?: string; name: string; data: unknown; timestamp: number; processedOn?: number; finishedOn?: number; failedReason?: string }) => ({
-    id: job.id,
-    name: job.name,
-    data: job.data,
-    createdAt: new Date(job.timestamp).toISOString(),
-    processedAt: job.processedOn ? new Date(job.processedOn).toISOString() : null,
-    finishedAt: job.finishedOn ? new Date(job.finishedOn).toISOString() : null,
-    failedReason: job.failedReason ?? null,
-  });
-
-  res.json({
-    waiting: waiting.map(formatJob),
-    active: active.map(formatJob),
-    completed: completed.map(formatJob),
-    failed: failed.map(formatJob),
-    counts: {
-      waiting: waiting.length,
-      active: active.length,
-      completed: completed.length,
-      failed: failed.length,
+  const builds = await prisma.lead.findMany({
+    where: {
+      build_status: { in: ["QUEUED", "BUILDING", "COMPLETE", "FAILED"] },
+    },
+    orderBy: { updated_at: "desc" },
+    include: {
+      scrape_job: { select: { query: true, location: true } },
     },
   });
+
+  res.json({ builds });
+});
+
+const bulkBuildSchema = z.object({
+  lead_ids: z.array(z.string().cuid()).min(1),
+});
+
+// POST /api/build/queue – bulk-enqueue builds
+router.post("/queue", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  const parsed = bulkBuildSchema.safeParse(req.body);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid request body", details: parsed.error.errors });
+    return;
+  }
+
+  const { lead_ids } = parsed.data;
+
+  const leads = await prisma.lead.findMany({
+    where: {
+      id: { in: lead_ids },
+      excluded: false,
+      build_status: { notIn: ["QUEUED", "BUILDING"] },
+    },
+  });
+
+  let queued = 0;
+  for (const lead of leads) {
+    await prisma.lead.update({
+      where: { id: lead.id },
+      data: { build_status: "QUEUED", build_log: null },
+    });
+    await enqueueBuildJob(lead.id);
+    queued++;
+  }
+
+  res.json({ queued });
 });
 
 // GET /api/build/:leadId/log  (SSE stream)

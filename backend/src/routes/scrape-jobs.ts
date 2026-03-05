@@ -33,7 +33,7 @@ router.post("/", requireAuth, async (req: Request, res: Response): Promise<void>
     console.error(`[ScrapeJob ${job.id}] Scrape failed:`, err.message);
   });
 
-  res.status(201).json(job);
+  res.status(201).json({ job });
 });
 
 async function runScrape(jobId: string, query: string, location: string): Promise<void> {
@@ -116,7 +116,7 @@ router.get("/", requireAuth, async (_req: Request, res: Response): Promise<void>
       _count: { select: { leads: true } },
     },
   });
-  res.json(jobs);
+  res.json({ jobs });
 });
 
 const getLeadsQuerySchema = z.object({
