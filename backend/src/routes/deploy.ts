@@ -30,7 +30,7 @@ router.get("/", requireAuth, async (_req: Request, res: Response): Promise<void>
     },
   });
 
-  res.json({ data: deployed, total: deployed.length });
+  res.json({ deployments: deployed });
 });
 
 // POST /api/deploy/:leadId – manually trigger deploy for a lead

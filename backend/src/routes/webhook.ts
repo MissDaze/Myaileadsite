@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Lead } from "@prisma/client";
 import { normalisePhone, phonesMatch } from "../lib/phone";
 import { classifyIntent } from "../services/claude";
 import { enqueueBuildJob } from "../lib/queue";
@@ -105,7 +105,7 @@ router.post("/textmagic", async (req: Request, res: Response): Promise<void> => 
       where: { sms_sent: true },
     });
 
-    const matchedLead = leads.find((l) => phonesMatch(l.phone, normalisedIncoming));
+    const matchedLead = leads.find((l: Lead) => phonesMatch(l.phone, normalisedIncoming));
 
     if (!matchedLead) {
       console.warn(`[Webhook] No lead found matching phone: ${senderPhone} (normalised: ${normalisedIncoming})`);

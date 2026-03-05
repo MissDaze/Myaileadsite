@@ -64,7 +64,7 @@ router.get("/", requireAuth, async (req: Request, res: Response): Promise<void> 
   ]);
 
   res.json({
-    data: leads,
+    leads,
     pagination: { page, limit, total, pages: Math.ceil(total / limit) },
   });
 });
