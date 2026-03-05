@@ -43,18 +43,18 @@ export const createScrapeJob = (query: string, location: string) =>
 // Leads
 export const getLeads = (params?: Record<string, string | number | boolean>) =>
   api.get<{ leads: import('../types').Lead[] }>('/leads', { params })
-export const getLead = (id: number) => api.get<{ lead: import('../types').Lead }>(`/leads/${id}`)
-export const excludeLead = (id: number, excluded: boolean) =>
+export const getLead = (id: string) => api.get<{ lead: import('../types').Lead }>(`/leads/${id}`)
+export const excludeLead = (id: string, excluded: boolean) =>
   api.patch<{ lead: import('../types').Lead }>(`/leads/${id}`, { excluded })
-export const sendSMS = (leadIds: number[]) =>
-  api.post<{ sent: number }>('/outreach/sms', { lead_ids: leadIds })
-export const buildLeads = (leadIds: number[]) =>
+export const sendSMS = (leadIds: string[]) =>
+  api.post<{ sent: number }>('/sms/send-bulk', { lead_ids: leadIds })
+export const buildLeads = (leadIds: string[]) =>
   api.post<{ queued: number }>('/build/queue', { lead_ids: leadIds })
 
 // Outreach
 export const getOutreach = () =>
   api.get<{ sent: import('../types').Lead[]; replies: import('../types').Lead[] }>('/outreach')
-export const sendFollowUp = (leadId: number) =>
+export const sendFollowUp = (leadId: string) =>
   api.post<{ lead: import('../types').Lead }>(`/outreach/followup/${leadId}`)
 
 // Build
@@ -68,11 +68,11 @@ export const getDeployments = () =>
 // CRM
 export const getCRMLeads = () =>
   api.get<{ leads: import('../types').Lead[] }>('/crm/leads')
-export const markInvoiced = (id: number) =>
+export const markInvoiced = (id: string) =>
   api.post<{ lead: import('../types').Lead }>(`/crm/leads/${id}/invoiced`)
-export const markWon = (id: number) =>
+export const markWon = (id: string) =>
   api.post<{ lead: import('../types').Lead }>(`/crm/leads/${id}/won`)
-export const markLost = (id: number) =>
+export const markLost = (id: string) =>
   api.post<{ lead: import('../types').Lead }>(`/crm/leads/${id}/lost`)
 
 // Analytics

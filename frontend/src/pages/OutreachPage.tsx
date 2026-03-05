@@ -96,7 +96,7 @@ export const OutreachPage: React.FC = () => {
                       <div className="flex flex-col items-end gap-1">
                         {lead.intent && <Badge variant={intentVariant(lead.intent)}>{lead.intent}</Badge>}
                         <span className="text-xs text-gray-500">
-                          {lead.sms_sent_at ? new Date(lead.sms_sent_at).toLocaleDateString() : ''}
+                          {lead.sms_sent ? 'SMS sent' : ''}
                         </span>
                       </div>
                     </div>
@@ -129,7 +129,7 @@ export const OutreachPage: React.FC = () => {
                       &ldquo;{lead.reply_text}&rdquo;
                     </p>
                     <p className="text-xs text-gray-500 mt-1">
-                      {lead.reply_received_at ? new Date(lead.reply_received_at).toLocaleString() : ''}
+                      {lead.updated_at ? new Date(lead.updated_at).toLocaleString() : ''}
                     </p>
                   </div>
                 ))}

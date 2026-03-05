@@ -13,8 +13,8 @@ const stageVariant = (stage: Lead['pipeline_stage']): BadgeVariant => {
     DEPLOYED: 'success',
     FOLLOWUP_SENT: 'blue',
     INVOICED: 'purple',
-    WON: 'success',
-    LOST: 'error',
+    CLOSED_WON: 'success',
+    CLOSED_LOST: 'error',
   }
   return stage ? (map[stage] ?? 'default') : 'default'
 }
@@ -23,7 +23,7 @@ export const FollowUpPage: React.FC = () => {
   const { showToast } = useToast()
   const [leads, setLeads] = useState<Lead[]>([])
   const [loading, setLoading] = useState(true)
-  const [actionLoading, setActionLoading] = useState<number | null>(null)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   const fetchLeads = useCallback(async () => {
     try {
@@ -40,7 +40,7 @@ export const FollowUpPage: React.FC = () => {
     fetchLeads()
   }, [fetchLeads])
 
-  const handleAction = async (id: number, action: 'followup' | 'invoiced' | 'won' | 'lost') => {
+  const handleAction = async (id: string, action: 'followup' | 'invoiced' | 'won' | 'lost') => {
     setActionLoading(id)
     try {
       if (action === 'followup') await sendFollowUp(id)
@@ -56,7 +56,7 @@ export const FollowUpPage: React.FC = () => {
     }
   }
 
-  const reviewLeads = leads.filter((l) => l.intent === 'POSITIVE' && l.pipeline_stage === 'REPLIED')
+  const reviewLeads = leads.filter((l) => l.intent === 'POSITIVE' && l.pipeline_stage === 'REPLIED_POSITIVE')
 
   return (
     <div>
@@ -132,9 +132,7 @@ export const FollowUpPage: React.FC = () => {
                         </Badge>
                       </td>
                       <td className="px-4 py-3 text-xs text-gray-400">
-                        {lead.followup_sent_at
-                          ? new Date(lead.followup_sent_at).toLocaleDateString()
-                          : '—'}
+                        {lead.followup_sms_sent ? 'Yes' : 'No'}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex flex-wrap gap-1">
@@ -158,7 +156,7 @@ export const FollowUpPage: React.FC = () => {
                               Mark Invoiced
                             </Button>
                           )}
-                          {lead.pipeline_stage !== 'WON' && lead.pipeline_stage !== 'LOST' && (
+                          {lead.pipeline_stage !== 'CLOSED_WON' && lead.pipeline_stage !== 'CLOSED_LOST' && (
                             <>
                               <Button
                                 size="sm"

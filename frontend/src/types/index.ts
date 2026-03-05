@@ -1,34 +1,39 @@
 export interface Lead {
-  id: number
+  id: string
   business_name: string
-  phone: string | null
+  phone: string
+  address: string | null
   category: string | null
   rating: number | null
+  review_count: number | null
+  maps_url: string | null
+  maps_overview_url: string | null
+  maps_reviews_url: string | null
+  maps_photos_url: string | null
+  hours: string | null
   sms_sent: boolean
-  sms_sent_at: string | null
   reply_text: string | null
-  reply_received_at: string | null
-  intent: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL' | null
-  build_status: 'QUEUED' | 'BUILDING' | 'COMPLETE' | 'FAILED' | null
+  intent: 'POSITIVE' | 'NEGATIVE' | 'NEUTRAL'
+  build_status: 'NOT_STARTED' | 'QUEUED' | 'BUILDING' | 'COMPLETE' | 'FAILED'
   build_log: string | null
-  pipeline_stage: 'NEW' | 'CONTACTED' | 'REPLIED' | 'BUILDING' | 'DEPLOYED' | 'FOLLOWUP_SENT' | 'INVOICED' | 'WON' | 'LOST' | null
-  excluded: boolean
+  github_repo_url: string | null
   site_url: string | null
-  github_url: string | null
-  deployed_at: string | null
-  followup_sent_at: string | null
-  scrape_job_id: number | null
+  followup_sms_sent: boolean
+  pipeline_stage: 'SCRAPED' | 'SMS_SENT' | 'REPLIED_POSITIVE' | 'BUILDING' | 'DEPLOYED' | 'FOLLOWUP_SENT' | 'INVOICED' | 'CLOSED_WON' | 'CLOSED_LOST'
+  excluded: boolean
+  scrape_job_id: string
   created_at: string
+  updated_at: string
 }
 
 export interface ScrapeJob {
-  id: number
+  id: string
   query: string
   location: string
-  status: 'PENDING' | 'RUNNING' | 'COMPLETE' | 'FAILED'
+  status: 'PENDING' | 'RUNNING' | 'DONE' | 'FAILED'
   lead_count: number
   created_at: string
-  completed_at: string | null
+  updated_at: string
 }
 
 export interface Analytics {
@@ -49,9 +54,9 @@ export interface Analytics {
 }
 
 export interface SMSPayload {
-  lead_ids: number[]
+  lead_ids: string[]
 }
 
 export interface BuildPayload {
-  lead_ids: number[]
+  lead_ids: string[]
 }

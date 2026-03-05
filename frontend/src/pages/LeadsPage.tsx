@@ -28,25 +28,26 @@ const intentVariant = (intent: Lead['intent']): BadgeVariant => {
 
 const buildVariant = (status: Lead['build_status']): BadgeVariant => {
   const map: Record<NonNullable<Lead['build_status']>, BadgeVariant> = {
+    NOT_STARTED: 'outline',
     QUEUED: 'warning',
     BUILDING: 'blue',
     COMPLETE: 'success',
     FAILED: 'error',
   }
-  return status ? map[status] : 'outline'
+  return map[status] ?? 'outline'
 }
 
 const stageVariant = (stage: Lead['pipeline_stage']): BadgeVariant => {
   const map: Record<string, BadgeVariant> = {
-    NEW: 'default',
-    CONTACTED: 'blue',
-    REPLIED: 'purple',
+    SCRAPED: 'default',
+    SMS_SENT: 'blue',
+    REPLIED_POSITIVE: 'purple',
     BUILDING: 'warning',
     DEPLOYED: 'success',
     FOLLOWUP_SENT: 'blue',
     INVOICED: 'purple',
-    WON: 'success',
-    LOST: 'error',
+    CLOSED_WON: 'success',
+    CLOSED_LOST: 'error',
   }
   return stage ? (map[stage] ?? 'default') : 'default'
 }
@@ -71,7 +72,7 @@ export const LeadsPage: React.FC = () => {
     setLoading(true)
     try {
       const params: Record<string, string | number | boolean> = {}
-      if (jobId) params.job_id = parseInt(jobId)
+      if (jobId) params.job_id = jobId
       if (intentFilter !== 'ALL') params.intent = intentFilter
       if (buildFilter !== 'ALL') params.build_status = buildFilter
       if (stageFilter !== 'ALL') params.pipeline_stage = stageFilter
@@ -92,7 +93,7 @@ export const LeadsPage: React.FC = () => {
   const selectedIds = Object.keys(rowSelection)
     .filter((k) => rowSelection[k])
     .map((k) => leads[parseInt(k)]?.id)
-    .filter((id): id is number => id !== undefined)
+    .filter((id): id is string => id !== undefined)
 
   const handleSendSMS = async () => {
     if (!selectedIds.length) return
@@ -324,15 +325,15 @@ export const LeadsPage: React.FC = () => {
           onChange={(e) => setStageFilter(e.target.value)}
           options={[
             { value: 'ALL', label: 'All Stages' },
-            { value: 'NEW', label: 'New' },
-            { value: 'CONTACTED', label: 'Contacted' },
-            { value: 'REPLIED', label: 'Replied' },
+            { value: 'SCRAPED', label: 'Scraped' },
+            { value: 'SMS_SENT', label: 'SMS Sent' },
+            { value: 'REPLIED_POSITIVE', label: 'Replied Positive' },
             { value: 'BUILDING', label: 'Building' },
             { value: 'DEPLOYED', label: 'Deployed' },
             { value: 'FOLLOWUP_SENT', label: 'Follow-up Sent' },
             { value: 'INVOICED', label: 'Invoiced' },
-            { value: 'WON', label: 'Won' },
-            { value: 'LOST', label: 'Lost' },
+            { value: 'CLOSED_WON', label: 'Closed Won' },
+            { value: 'CLOSED_LOST', label: 'Closed Lost' },
           ]}
         />
         <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">

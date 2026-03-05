@@ -75,9 +75,9 @@ export const DeploymentsPage: React.FC = () => {
                   </a>
                 )}
 
-                {d.github_url && (
+                {d.github_repo_url && (
                   <a
-                    href={d.github_url}
+                    href={d.github_repo_url}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block text-xs text-gray-400 hover:text-gray-200 truncate mb-3 transition-colors"
@@ -91,7 +91,7 @@ export const DeploymentsPage: React.FC = () => {
 
                 <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-800">
                   <span className="text-xs text-gray-500">
-                    {d.deployed_at ? new Date(d.deployed_at).toLocaleDateString() : 'Recently'}
+                    {d.updated_at ? new Date(d.updated_at).toLocaleDateString() : 'Recently'}
                   </span>
                   {d.site_url && (
                     <Button

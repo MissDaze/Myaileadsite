@@ -16,7 +16,7 @@ const statusVariant = (status: ScrapeJob['status']): BadgeVariant => {
   const map: Record<ScrapeJob['status'], BadgeVariant> = {
     PENDING: 'warning',
     RUNNING: 'blue',
-    COMPLETE: 'success',
+    DONE: 'success',
     FAILED: 'error',
   }
   return map[status] ?? 'default'

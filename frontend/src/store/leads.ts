@@ -4,7 +4,7 @@ import type { Lead } from '../types'
 interface LeadsStore {
   leads: Lead[]
   setLeads: (leads: Lead[]) => void
-  updateLead: (id: number, updates: Partial<Lead>) => void
+  updateLead: (id: string, updates: Partial<Lead>) => void
   clearLeads: () => void
 }
 

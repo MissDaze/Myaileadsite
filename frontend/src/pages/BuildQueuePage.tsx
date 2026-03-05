@@ -10,18 +10,19 @@ type BadgeVariant = 'warning' | 'blue' | 'success' | 'error' | 'outline'
 
 const buildVariant = (status: Lead['build_status']): BadgeVariant => {
   const map: Record<NonNullable<Lead['build_status']>, BadgeVariant> = {
+    NOT_STARTED: 'outline',
     QUEUED: 'warning',
     BUILDING: 'blue',
     COMPLETE: 'success',
     FAILED: 'error',
   }
-  return status ? map[status] : 'outline'
+  return map[status] ?? 'outline'
 }
 
 const getDuration = (lead: Lead) => {
-  if (!lead.sms_sent_at) return '—'
-  const start = new Date(lead.sms_sent_at).getTime()
-  const end = lead.deployed_at ? new Date(lead.deployed_at).getTime() : Date.now()
+  if (!lead.created_at) return '—'
+  const start = new Date(lead.created_at).getTime()
+  const end = lead.site_url ? new Date(lead.updated_at).getTime() : Date.now()
   const seconds = Math.floor((end - start) / 1000)
   if (seconds < 60) return `${seconds}s`
   return `${Math.floor(seconds / 60)}m ${seconds % 60}s`
