@@ -81,7 +81,8 @@ Copy `backend/.env.example` to `backend/.env` and fill in:
 | `OUTSCRAPER_API_KEY` | [Outscraper](https://outscraper.com/) API key |
 | `TEXTMAGIC_USERNAME` | TextMagic account username |
 | `TEXTMAGIC_API_KEY` | TextMagic API key |
-| `ANTHROPIC_API_KEY` | [Anthropic](https://anthropic.com/) API key |
+| `OPENROUTER_API_KEY` | [OpenRouter](https://openrouter.ai/) API key |
+| `OPENROUTER_MODEL` | Model slug for generation/classification (default: `anthropic/claude-opus-4.5`) -- use a paid, code-capable model with a large output budget, not a free-tier one |
 | `GITHUB_TOKEN` | GitHub Personal Access Token (repo scope) |
 | `GITHUB_USERNAME` | GitHub username for created repos |
 | `RAILWAY_TOKEN` | [Railway](https://railway.app/) API token |

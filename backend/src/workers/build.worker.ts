@@ -2,7 +2,7 @@ import "dotenv/config";
 import { Worker, Job } from "bullmq";
 import { PrismaClient } from "@prisma/client";
 import { BuildJobData } from "../lib/queue";
-import { generateWebsite } from "../services/claude";
+import { generateWebsite } from "../services/openrouter";
 import { createRepoAndPush } from "../services/github";
 import { deployToRailway } from "../services/railway";
 import { sendSms, buildFollowUpMessage } from "../services/textmagic";
@@ -51,10 +51,10 @@ async function processJob(job: Job<BuildJobData>): Promise<void> {
   });
   await appendLog(leadId, `Build started for ${lead.business_name}`);
 
-  // Step 1: Generate website with Claude
-  await appendLog(leadId, "Calling Claude to generate website files...");
+  // Step 1: Generate website via OpenRouter
+  await appendLog(leadId, "Calling OpenRouter to generate website files...");
   const generated = await generateWebsite(lead);
-  await appendLog(leadId, `Claude returned ${generated.files.length} files. Slug: ${generated.slug}`);
+  await appendLog(leadId, `OpenRouter returned ${generated.files.length} files. Slug: ${generated.slug}`);
 
   // Step 2: Push to GitHub
   await appendLog(leadId, "Creating GitHub repository and pushing files...");

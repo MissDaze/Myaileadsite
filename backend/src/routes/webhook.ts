@@ -1,7 +1,7 @@
 import { Router, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 import { normalisePhone, phonesMatch } from "../lib/phone";
-import { classifyIntent } from "../services/claude";
+import { classifyIntent } from "../services/openrouter";
 import { enqueueBuildJob } from "../lib/queue";
 
 const router = Router();

@@ -13,7 +13,6 @@
     "worker": "tsx src/workers/build.worker.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.27.0",
     "@prisma/client": "^5.22.0",
     "axios": "^1.7.7",
     "bullmq": "^5.16.0",
