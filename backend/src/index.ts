@@ -15,6 +15,10 @@ import analyticsRouter from "./routes/analytics";
 const app = express();
 const PORT = process.env.PORT ?? 3001;
 
+// Railway sits in front as a reverse proxy -- express-rate-limit needs this
+// to trust the X-Forwarded-For header it sets, or it throws on every request.
+app.set("trust proxy", 1);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
