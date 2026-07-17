@@ -82,7 +82,7 @@ Copy `backend/.env.example` to `backend/.env` and fill in:
 | `TEXTMAGIC_USERNAME` | TextMagic account username |
 | `TEXTMAGIC_API_KEY` | TextMagic API key |
 | `OPENROUTER_API_KEY` | [OpenRouter](https://openrouter.ai/) API key |
-| `OPENROUTER_MODEL` | Model slug for generation/classification (default: `anthropic/claude-opus-4.5`) -- use a paid, code-capable model with a large output budget, not a free-tier one |
+| `OPENROUTER_MODEL` | Model slug for generation/classification (default: `deepseek/deepseek-chat`) -- a cheap, code-capable paid model; avoid free-tier models here, they're unreliable at 32k-token structured output |
 | `GITHUB_TOKEN` | GitHub Personal Access Token (repo scope) |
 | `GITHUB_USERNAME` | GitHub username for created repos |
 | `RAILWAY_TOKEN` | [Railway](https://railway.app/) API token |

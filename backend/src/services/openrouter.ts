@@ -4,10 +4,12 @@
 // FastAPI + React site in one shot -- this is NOT a task free-tier OpenRouter
 // models handle reliably (see the healthcare-leadgen-demo project's notes on
 // free models either rate-limiting or burning their token budget on internal
-// reasoning). OPENROUTER_MODEL should point at a real paid, code-capable
-// model with a large output budget; check https://openrouter.ai/models for
-// current pricing/availability before picking one.
-const DEFAULT_MODEL = "anthropic/claude-opus-4.5";
+// reasoning), but a flagship model here is also needlessly expensive per
+// generation attempt. DeepSeek's chat model is a cheap, code-capable
+// middle ground -- verify it's still live and check current per-token
+// pricing at https://openrouter.ai/models before a real campaign, since
+// availability/pricing shifts over time.
+const DEFAULT_MODEL = "deepseek/deepseek-chat";
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 function getModel(): string {
