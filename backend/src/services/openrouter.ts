@@ -38,7 +38,9 @@ async function chatCompletion(prompt: string, maxTokens: number): Promise<string
     throw new Error(`OpenRouter request failed (${res.status}): ${body}`);
   }
 
-  const json = await res.json();
+  const json = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
   const text = json.choices?.[0]?.message?.content?.trim();
   if (!text) throw new Error(`Unexpected OpenRouter response: ${JSON.stringify(json)}`);
   return text;
