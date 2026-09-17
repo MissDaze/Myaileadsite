@@ -34,7 +34,7 @@ export const MultichannelPage: React.FC = () => {
   const [textMagicUsername, setTextMagicUsername] = useState('')
   const [textMagicApiKey, setTextMagicApiKey] = useState('')
 
-  const saveTextMagic = async (event: React.FormEvent) => {
+  async function saveTextMagic(event: React.FormEvent) {
     event.preventDefault()
     setBusy(true)
     try {
