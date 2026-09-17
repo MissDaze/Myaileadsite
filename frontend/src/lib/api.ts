@@ -163,6 +163,8 @@ export const getAnalytics = async () => {
 
 // Multichannel outreach
 export const getMultichannelStatus = () => api.get('/multichannel/status')
+export const configureTextMagic = (username: string, apiKey: string) =>
+  api.post('/multichannel/providers/textmagic', { username, api_key: apiKey })
 export const getContacts = () => api.get<{ contacts: import('../types').Contact[] }>('/multichannel/contacts')
 export const importContacts = (rows: Record<string, unknown>[], filename: string, sourceType: string) =>
   api.post('/multichannel/contacts/import', { rows, filename, source_type: sourceType })
