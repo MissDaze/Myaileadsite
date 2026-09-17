@@ -12,6 +12,7 @@ import buildRouter from "./routes/build";
 import deployRouter from "./routes/deploy";
 import analyticsRouter from "./routes/analytics";
 import outreachRouter from "./routes/outreach";
+import multichannelRouter from "./routes/multichannel";
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -65,6 +66,7 @@ app.use("/api/deploy", apiLimiter, deployRouter);
 app.use("/api/deployments", apiLimiter, deployRouter);
 app.use("/api/analytics", apiLimiter, analyticsRouter);
 app.use("/api/outreach", apiLimiter, outreachRouter);
+app.use("/api/multichannel", apiLimiter, multichannelRouter);
 
 // Global error handler
 app.use(
