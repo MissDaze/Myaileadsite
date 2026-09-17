@@ -159,3 +159,24 @@ export const getAnalytics = async () => {
 
   return { ...response, data: analytics }
 }
+
+
+// Multichannel outreach
+export const getMultichannelStatus = () => api.get('/multichannel/status')
+export const getContacts = () => api.get<{ contacts: import('../types').Contact[] }>('/multichannel/contacts')
+export const importContacts = (rows: Record<string, unknown>[], filename: string, sourceType: string) =>
+  api.post('/multichannel/contacts/import', { rows, filename, source_type: sourceType })
+export const getCampaigns = () => api.get<{ campaigns: import('../types').CampaignSummary[] }>('/multichannel/campaigns')
+export const createCampaign = (payload: {
+  name: string
+  channel: string
+  sequence: string
+  brief: string
+  tone: string
+  contact_ids: string[]
+}) => api.post('/multichannel/campaigns', payload)
+export const generateCampaign = (id: string) => api.post(`/multichannel/campaigns/${id}/generate`)
+export const getCampaign = (id: string) => api.get(`/multichannel/campaigns/${id}`)
+export const approveCampaign = (id: string) => api.post(`/multichannel/campaigns/${id}/approve-all`)
+export const getGoogleOAuthUrl = () => api.get<{ url: string }>('/multichannel/oauth/google/start')
+export const disconnectOAuth = (provider: string) => api.delete(`/multichannel/oauth/${provider}`)
