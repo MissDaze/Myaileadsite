@@ -3,7 +3,7 @@ import * as XLSX from 'xlsx'
 import type { CampaignSummary, Contact } from '../types'
 import {
   approveCampaign, createCampaign, generateCampaign, getCampaigns,
-  getContacts, getGoogleOAuthUrl, getMultichannelStatus, importContacts,
+  configureTextMagic, getContacts, getGoogleOAuthUrl, getMultichannelStatus, importContacts,
 } from '../lib/api'
 import { Button } from '../components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card'
@@ -30,6 +30,25 @@ export const MultichannelPage: React.FC = () => {
   const [sequence, setSequence] = useState('EMAIL_THEN_SMS')
   const [brief, setBrief] = useState('')
   const [tone, setTone] = useState('PROFESSIONAL')
+  const [showTextMagic, setShowTextMagic] = useState(false)
+  const [textMagicUsername, setTextMagicUsername] = useState('')
+  const [textMagicApiKey, setTextMagicApiKey] = useState('')
+
+  const saveTextMagic = async (event: React.FormEvent) => {
+    event.preventDefault()
+    setBusy(true)
+    try {
+      await configureTextMagic(textMagicUsername, textMagicApiKey)
+      setTextMagicApiKey('')
+      setShowTextMagic(false)
+      await refresh()
+      showToast('TextMagic connected successfully', 'success')
+    } catch {
+      showToast('Could not connect TextMagic. Check the username and API key.', 'error')
+    } finally {
+      setBusy(false)
+    }
+  }
 
   const refresh = useCallback(async () => {
     const [contactResult, campaignResult, statusResult] = await Promise.all([
@@ -136,11 +155,22 @@ export const MultichannelPage: React.FC = () => {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>SMS provider</CardTitle></CardHeader>
-          <CardContent>
+          <CardHeader><CardTitle>TextMagic SMS</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
             <p className="text-sm text-gray-400">
-              {status?.sms_available ? 'TextMagic is configured and available.' : 'TextMagic credentials are not configured. SMS sending remains disabled.'}
+              {status?.sms_available ? 'Connected and ready to send SMS.' : 'Connect a TextMagic account to enable SMS.'}
             </p>
+            <Button onClick={() => setShowTextMagic((open) => !open)} variant={status?.sms_available ? 'outline' : 'default'}>
+              {status?.sms_available ? 'Update TextMagic' : 'Connect TextMagic'}
+            </Button>
+            {showTextMagic && (
+              <form onSubmit={saveTextMagic} className="space-y-3 rounded-lg border border-gray-700 bg-gray-900/60 p-3">
+                <Input label="TextMagic username" value={textMagicUsername} onChange={(e) => setTextMagicUsername(e.target.value)} required />
+                <Input label="TextMagic API key" type="password" value={textMagicApiKey} onChange={(e) => setTextMagicApiKey(e.target.value)} required />
+                <p className="text-xs text-gray-500">Credentials are tested before saving and stored encrypted.</p>
+                <Button type="submit" loading={busy}>Test & Connect</Button>
+              </form>
+            )}
           </CardContent>
         </Card>
 
