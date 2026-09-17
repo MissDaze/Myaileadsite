@@ -10,10 +10,12 @@ import { BuildQueuePage } from './pages/BuildQueuePage'
 import { DeploymentsPage } from './pages/DeploymentsPage'
 import { FollowUpPage } from './pages/FollowUpPage'
 import { AnalyticsPage } from './pages/AnalyticsPage'
+import { ErrorBoundary } from './components/ErrorBoundary'
 
 export default function App() {
   return (
-    <ToastProvider>
+    <ErrorBoundary>
+      <ToastProvider>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<LoginPage />} />
@@ -37,6 +39,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
-    </ToastProvider>
+      </ToastProvider>
+    </ErrorBoundary>
   )
 }
