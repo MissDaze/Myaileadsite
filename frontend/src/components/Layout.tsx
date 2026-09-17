@@ -6,7 +6,7 @@ const navItems = [
   { to: '/scrape-jobs', label: 'Scrape Jobs', icon: '🔍' },
   { to: '/leads', label: 'Leads', icon: '👥' },
   { to: '/outreach', label: 'Outreach', icon: '📱' },
-  { to: '/multichannel', label: 'Campaigns & Imports', icon: '✉️' },
+  { to: '/multichannel', label: 'Import Contacts', icon: '📥' },
   { to: '/build-queue', label: 'Build Queue', icon: '🏗️' },
   { to: '/deployments', label: 'Deployments', icon: '🚀' },
   { to: '/follow-up', label: 'Follow-up CRM', icon: '🤝' },
@@ -98,7 +98,15 @@ export const Layout: React.FC = () => {
             </svg>
           </button>
           <div className="flex-1" />
-          <span className="text-sm text-gray-400">Logged in as <span className="text-gray-200 font-medium">{user}</span></span>
+          <button
+            onClick={() => navigate('/multichannel')}
+            className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-3 py-2 text-sm font-semibold text-white hover:bg-indigo-500 transition-colors"
+            aria-label="Import contacts"
+          >
+            <span>📥</span>
+            <span className="hidden sm:inline">Import Contacts</span>
+          </button>
+          <span className="hidden md:inline text-sm text-gray-400">Logged in as <span className="text-gray-200 font-medium">{user}</span></span>
         </header>
 
         {/* Page content */}
