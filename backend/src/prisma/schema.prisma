@@ -51,3 +51,142 @@ model Lead {
 
   @@unique([phone, scrape_job_id])
 }
+
+
+model Workspace {
+  id          String                @id @default(cuid())
+  name        String
+  created_at  DateTime              @default(now())
+  updated_at  DateTime              @updatedAt
+  users       WorkspaceUser[]
+  contacts    Contact[]
+  campaigns   Campaign[]
+  connections OAuthConnection[]
+}
+
+model AppUser {
+  id          String          @id @default(cuid())
+  username    String          @unique
+  display_name String?
+  created_at  DateTime        @default(now())
+  updated_at  DateTime        @updatedAt
+  workspaces  WorkspaceUser[]
+}
+
+model WorkspaceUser {
+  id           String    @id @default(cuid())
+  workspace_id String
+  user_id      String
+  role         String    @default("OWNER")
+  workspace    Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  user         AppUser   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([workspace_id, user_id])
+}
+
+model OAuthConnection {
+  id                    String    @id @default(cuid())
+  workspace_id          String
+  provider              String
+  provider_account_id   String?
+  provider_email        String?
+  encrypted_access_token String?
+  encrypted_refresh_token String?
+  token_expires_at      DateTime?
+  scopes                 String?
+  status                 String    @default("DISCONNECTED")
+  created_at             DateTime  @default(now())
+  updated_at             DateTime  @updatedAt
+  workspace              Workspace @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+
+  @@unique([workspace_id, provider])
+}
+
+model Contact {
+  id              String            @id @default(cuid())
+  workspace_id    String
+  first_name      String?
+  last_name       String?
+  company         String
+  job_title       String?
+  email           String?
+  phone           String?
+  website         String?
+  source          String?
+  email_valid     Boolean           @default(false)
+  phone_valid     Boolean           @default(false)
+  email_opt_out   Boolean           @default(false)
+  sms_opt_out     Boolean           @default(false)
+  created_at      DateTime          @default(now())
+  updated_at      DateTime          @updatedAt
+  workspace       Workspace         @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  campaigns       CampaignContact[]
+
+  @@index([workspace_id, email])
+  @@index([workspace_id, phone])
+}
+
+model ContactImport {
+  id             String   @id @default(cuid())
+  workspace_id   String
+  filename       String
+  source_type    String
+  total_rows     Int
+  imported_rows  Int
+  duplicate_rows Int
+  rejected_rows  Int
+  created_at     DateTime @default(now())
+
+  @@index([workspace_id, created_at])
+}
+
+model Campaign {
+  id          String            @id @default(cuid())
+  workspace_id String
+  name        String
+  channel     String
+  sequence    String
+  brief       String
+  tone        String            @default("PROFESSIONAL")
+  status      String            @default("DRAFT")
+  scheduled_at DateTime?
+  approved_at DateTime?
+  created_at  DateTime          @default(now())
+  updated_at  DateTime          @updatedAt
+  workspace   Workspace         @relation(fields: [workspace_id], references: [id], onDelete: Cascade)
+  contacts    CampaignContact[]
+
+  @@index([workspace_id, created_at])
+}
+
+model CampaignContact {
+  id            String    @id @default(cuid())
+  campaign_id   String
+  contact_id    String
+  email_subject String?
+  email_body    String?
+  sms_body      String?
+  approved      Boolean   @default(false)
+  email_status  String    @default("NOT_SELECTED")
+  sms_status    String    @default("NOT_SELECTED")
+  email_sent_at DateTime?
+  sms_sent_at   DateTime?
+  error_message String?
+  created_at    DateTime  @default(now())
+  updated_at    DateTime  @updatedAt
+  campaign      Campaign  @relation(fields: [campaign_id], references: [id], onDelete: Cascade)
+  contact       Contact   @relation(fields: [contact_id], references: [id], onDelete: Cascade)
+
+  @@unique([campaign_id, contact_id])
+}
+
+model SuppressionEntry {
+  id           String   @id @default(cuid())
+  workspace_id String
+  channel      String
+  value        String
+  reason       String?
+  created_at   DateTime @default(now())
+
+  @@unique([workspace_id, channel, value])
+}
