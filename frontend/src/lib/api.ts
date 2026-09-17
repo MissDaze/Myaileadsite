@@ -36,7 +36,21 @@ export const login = (username: string, password: string) =>
   api.post<{ token: string; user: string }>('/auth/login', { username, password })
 
 // Scrape Jobs
-export const getScrapeJobs = () => api.get<{ jobs: import('../types').ScrapeJob[] }>('/scrape-jobs')
+type ScrapeJobsResponse =
+  | { jobs: import('../types').ScrapeJob[] }
+  | import('../types').ScrapeJob[]
+
+export const getScrapeJobs = async () => {
+  const response = await api.get<ScrapeJobsResponse>('/scrape-jobs')
+  const payload = response.data
+  const jobs = Array.isArray(payload)
+    ? payload
+    : Array.isArray(payload?.jobs)
+      ? payload.jobs
+      : []
+
+  return { ...response, data: { jobs } }
+}
 export const createScrapeJob = (query: string, location: string) =>
   api.post<{ job: import('../types').ScrapeJob }>('/scrape-jobs', { query, location })
 
