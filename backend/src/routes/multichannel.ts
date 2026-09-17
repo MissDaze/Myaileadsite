@@ -207,7 +207,7 @@ async function generateCopy(contact: { first_name: string | null; company: strin
 router.post("/campaigns/:id/generate", requireAuth, async (req: Request, res: Response): Promise<void> => {
   const id = await workspaceId();
   const campaign = await prisma.campaign.findFirst({
-    where: { id: req.params.id, workspace_id: id },
+    where: { id: req.params.id as string, workspace_id: id },
     include: { contacts: { include: { contact: true } } },
   });
   if (!campaign) { res.status(404).json({ error: "Campaign not found" }); return; }
@@ -232,7 +232,7 @@ router.post("/campaigns/:id/generate", requireAuth, async (req: Request, res: Re
 router.get("/campaigns/:id", requireAuth, async (req, res) => {
   const id = await workspaceId();
   const campaign = await prisma.campaign.findFirst({
-    where: { id: req.params.id, workspace_id: id },
+    where: { id: req.params.id as string, workspace_id: id },
     include: { contacts: { include: { contact: true }, orderBy: { created_at: "asc" } } },
   });
   if (!campaign) { res.status(404).json({ error: "Campaign not found" }); return; }
@@ -241,10 +241,10 @@ router.get("/campaigns/:id", requireAuth, async (req, res) => {
 
 router.patch("/campaigns/:campaignId/messages/:messageId", requireAuth, async (req: Request, res: Response): Promise<void> => {
   const id = await workspaceId();
-  const campaign = await prisma.campaign.findFirst({ where: { id: req.params.campaignId, workspace_id: id } });
+  const campaign = await prisma.campaign.findFirst({ where: { id: req.params.campaignId as string, workspace_id: id } });
   if (!campaign) { res.status(404).json({ error: "Campaign not found" }); return; }
   const message = await prisma.campaignContact.update({
-    where: { id: req.params.messageId },
+    where: { id: req.params.messageId as string },
     data: {
       email_subject: req.body.email_subject,
       email_body: req.body.email_body,
@@ -257,7 +257,7 @@ router.patch("/campaigns/:campaignId/messages/:messageId", requireAuth, async (r
 
 router.post("/campaigns/:id/approve-all", requireAuth, async (req: Request, res: Response): Promise<void> => {
   const id = await workspaceId();
-  const campaign = await prisma.campaign.findFirst({ where: { id: req.params.id, workspace_id: id } });
+  const campaign = await prisma.campaign.findFirst({ where: { id: req.params.id as string, workspace_id: id } });
   if (!campaign) { res.status(404).json({ error: "Campaign not found" }); return; }
   await prisma.campaignContact.updateMany({ where: { campaign_id: campaign.id }, data: { approved: true } });
   await prisma.campaign.update({ where: { id: campaign.id }, data: { status: "APPROVED", approved_at: new Date() } });
@@ -337,7 +337,7 @@ router.get("/oauth/google/callback", async (req: Request, res: Response): Promis
 
 router.delete("/oauth/:provider", requireAuth, async (req, res) => {
   const id = await workspaceId();
-  await prisma.oAuthConnection.deleteMany({ where: { workspace_id: id, provider: req.params.provider } });
+  await prisma.oAuthConnection.deleteMany({ where: { workspace_id: id, provider: req.params.provider as string } });
   res.json({ disconnected: true });
 });
 
