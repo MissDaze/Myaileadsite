@@ -116,7 +116,12 @@ router.get("/", requireAuth, async (_req: Request, res: Response): Promise<void>
       _count: { select: { leads: true } },
     },
   });
-  res.json(jobs);
+  res.json({
+    jobs: jobs.map(({ _count, ...job }) => ({
+      ...job,
+      lead_count: job.lead_count ?? _count.leads,
+    })),
+  });
 });
 
 const getLeadsQuerySchema = z.object({
