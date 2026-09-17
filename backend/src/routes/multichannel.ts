@@ -2,7 +2,7 @@ import { Router, Request, Response } from "express";
 import { createCipheriv, createDecipheriv, createHash, randomBytes, createHmac } from "crypto";
 import { PrismaClient } from "@prisma/client";
 import { requireAuth } from "../middleware/auth";
-import { sendSms } from "../services/textmagic";
+import { sendSms, testTextMagicCredentials } from "../services/textmagic";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -67,9 +67,48 @@ router.get("/status", requireAuth, async (_req, res) => {
   res.json({
     google_oauth_available: Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET && process.env.OAUTH_CALLBACK_BASE_URL),
     microsoft_oauth_available: Boolean(process.env.MICROSOFT_CLIENT_ID && process.env.MICROSOFT_CLIENT_SECRET),
-    sms_available: Boolean(process.env.TEXTMAGIC_USERNAME && process.env.TEXTMAGIC_API_KEY),
+    sms_available: Boolean(
+      (process.env.TEXTMAGIC_USERNAME && process.env.TEXTMAGIC_API_KEY) ||
+      connections.some((connection) => connection.provider === "textmagic" && connection.status === "CONNECTED")
+    ),
     connections,
   });
+});
+
+router.post("/providers/textmagic", requireAuth, async (req: Request, res: Response): Promise<void> => {
+  const id = await workspaceId();
+  const username = String(req.body?.username || "").trim();
+  const apiKey = String(req.body?.api_key || "").trim();
+  if (!username || !apiKey) {
+    res.status(400).json({ error: "TextMagic username and API key are required" });
+    return;
+  }
+  try {
+    await testTextMagicCredentials(username, apiKey);
+    await prisma.oAuthConnection.upsert({
+      where: { workspace_id_provider: { workspace_id: id, provider: "textmagic" } },
+      update: {
+        provider_account_id: username,
+        provider_email: username,
+        encrypted_access_token: encrypt(username),
+        encrypted_refresh_token: encrypt(apiKey),
+        status: "CONNECTED",
+      },
+      create: {
+        workspace_id: id,
+        provider: "textmagic",
+        provider_account_id: username,
+        provider_email: username,
+        encrypted_access_token: encrypt(username),
+        encrypted_refresh_token: encrypt(apiKey),
+        status: "CONNECTED",
+      },
+    });
+    res.json({ connected: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "TextMagic connection failed";
+    res.status(400).json({ error: message });
+  }
 });
 
 router.get("/contacts", requireAuth, async (_req, res) => {
