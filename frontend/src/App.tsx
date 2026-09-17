@@ -11,6 +11,7 @@ import { DeploymentsPage } from './pages/DeploymentsPage'
 import { FollowUpPage } from './pages/FollowUpPage'
 import { AnalyticsPage } from './pages/AnalyticsPage'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { MultichannelPage } from './pages/MultichannelPage'
 
 export default function App() {
   return (
@@ -31,6 +32,7 @@ export default function App() {
             <Route path="scrape-jobs" element={<ScrapeJobsPage />} />
             <Route path="leads" element={<LeadsPage />} />
             <Route path="outreach" element={<OutreachPage />} />
+            <Route path="multichannel" element={<MultichannelPage />} />
             <Route path="build-queue" element={<BuildQueuePage />} />
             <Route path="deployments" element={<DeploymentsPage />} />
             <Route path="follow-up" element={<FollowUpPage />} />
