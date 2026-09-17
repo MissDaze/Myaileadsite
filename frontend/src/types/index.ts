@@ -60,3 +60,33 @@ export interface SMSPayload {
 export interface BuildPayload {
   lead_ids: string[]
 }
+
+
+export interface Contact {
+  id: string
+  first_name: string | null
+  last_name: string | null
+  company: string
+  job_title: string | null
+  email: string | null
+  phone: string | null
+  website: string | null
+  source: string | null
+  email_valid: boolean
+  phone_valid: boolean
+  email_opt_out: boolean
+  sms_opt_out: boolean
+  created_at: string
+}
+
+export interface CampaignSummary {
+  id: string
+  name: string
+  channel: 'EMAIL_ONLY' | 'SMS_ONLY' | 'BOTH'
+  sequence: 'EMAIL_THEN_SMS' | 'SMS_THEN_EMAIL' | 'SIMULTANEOUS' | 'EMAIL_FALLBACK_SMS'
+  brief: string
+  tone: string
+  status: string
+  created_at: string
+  _count?: { contacts: number }
+}
