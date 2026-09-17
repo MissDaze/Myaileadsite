@@ -283,18 +283,23 @@ export const LeadsPage: React.FC = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-gray-100">Leads</h1>
           <p className="text-gray-400 text-sm mt-1">
             {jobId ? `Filtered by Job #${jobId} · ` : ''}{leads.length} total leads
           </p>
         </div>
-        {jobId && (
-          <Button variant="outline" size="sm" onClick={() => navigate('/leads')}>
-            Clear Filter
+        <div className="flex flex-wrap gap-2">
+          <Button onClick={() => navigate('/multichannel')}>
+            📥 Import Contacts
           </Button>
-        )}
+          {jobId && (
+            <Button variant="outline" size="sm" onClick={() => navigate('/leads')}>
+              Clear Filter
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Filters */}
