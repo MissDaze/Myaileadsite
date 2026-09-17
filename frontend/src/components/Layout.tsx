@@ -6,6 +6,7 @@ const navItems = [
   { to: '/scrape-jobs', label: 'Scrape Jobs', icon: '🔍' },
   { to: '/leads', label: 'Leads', icon: '👥' },
   { to: '/outreach', label: 'Outreach', icon: '📱' },
+  { to: '/multichannel', label: 'Campaigns & Imports', icon: '✉️' },
   { to: '/build-queue', label: 'Build Queue', icon: '🏗️' },
   { to: '/deployments', label: 'Deployments', icon: '🚀' },
   { to: '/follow-up', label: 'Follow-up CRM', icon: '🤝' },
